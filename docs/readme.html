@@ -45,7 +45,7 @@ This is the same principle as multi-connection download managers such as IDM or 
 
 ## 5. OpenWrt / router port (summary)
 
-This repository does not include a router version. A port looks possible: the engine is Node/TypeScript, and on Linux it uses `SO_BINDTODEVICE`. It would need to be separated from Electron and run as a Linux service, so that the router runs the same downloader itself. Each connection still uses its own public IP, with no bonded IP or tunnel. It would only speed up downloads that the router itself performs.
+A preview router version (v0.1.0, not yet tested on real hardware) is in the <code>openwrt/</code> folder: a static Go port of the HTTP engine. See the OpenWrt section on the home page. The original note follows. A port looks possible: the engine is Node/TypeScript, and on Linux it uses `SO_BINDTODEVICE`. It would need to be separated from Electron and run as a Linux service, so that the router runs the same downloader itself. Each connection still uses its own public IP, with no bonded IP or tunnel. It would only speed up downloads that the router itself performs.
 
 ## 6. OpenWrt readiness plan
 
