@@ -1,6 +1,8 @@
 # Netlink
 
-Multi-line download accelerator for Windows by Neuereatec.
+Multi-connection download accelerator for Windows by Neuereatec.
+
+Netlink downloads different parts of the same file through each internet connection you select, then assembles them on disk. It combines connections for its own downloads and requires no VPN or virtual network adapter. Each part is fetched over that connection’s own public IP; websites see several IPs, not one.
 
 - Website: https://bbscalton.github.io/netlink/
 - Windows installer (latest): https://github.com/bbscalton/netlink/releases/latest/download/Netlink-Setup-1.0.0.exe
@@ -13,7 +15,7 @@ Netlink is a rebranded build of **Plexo** by Anmol Kapil, released under the MIT
 
 ## 2. Core claim
 
-Netlink splits **one download** across **several network interfaces on the same PC**, for example Wi-Fi, Ethernet and USB phone tethering. Every part runs locally. There is no VPS, relay or proxy server.
+Netlink downloads different parts of the same file through each internet connection you select, then assembles them on disk. It combines connections for its own downloads and requires no VPN or virtual network adapter. The connections can be, for example, Wi-Fi, Ethernet and USB phone tethering on the same PC. Everything runs locally: there is no VPS, relay, proxy, tunnel or virtual network adapter, and no bonded or virtual IP. Each part is fetched over that connection’s own public IP; websites see several IPs, not one.
 
 **Each interface must be its own internet connection** (a different ISP, mobile data, and so on). Two adapters that reach the internet through the same router and uplink add no bandwidth.
 
@@ -23,27 +25,27 @@ Netlink splits **one download** across **several network interfaces on the same 
 - **Socket pinning:** `src/main/network/deviceBinding.ts` pins each TCP socket to one interface.
   - On Linux it uses `SO_BINDTODEVICE` through `setsockopt`.
   - Elsewhere, and as a fallback, it binds the socket's source IP with Node's `localAddress`.
-- **Range requests:** files are fetched in pieces with HTTP Range requests, as defined in RFC 9110 §14 (https://www.rfc-editor.org/rfc/rfc9110#name-range-requests).
-  - Blocks are 1 MiB to 8 MiB (`src/main/download/plan.ts`).
-  - There are about 2 blocks for each possible stream, and they sit in a shared queue. Streams take a new block as soon as they finish one, so a faster line ends up fetching more blocks.
+- **Range requests:** different parts of the same file are fetched with HTTP Range requests, as defined in RFC 9110 §14 (https://www.rfc-editor.org/rfc/rfc9110#name-range-requests).
+  - Parts are 1 MiB to 8 MiB (`src/main/download/plan.ts`).
+  - There are about 2 parts for each possible stream, and they sit in a shared queue. Streams take a new part as soon as they finish one, so a faster connection ends up fetching more parts.
 - **Adaptive streams:** each network starts with 8 streams. It can double up to 32 while every stream is receiving data (`plan.ts`, `concurrency.ts`).
-- **Racing slow tail blocks:** near the end of a download, a slow block can be fetched a second time on another stream ("hedging", in `scheduler.ts`), and the first copy to finish wins.
-- **Writing the file:** blocks are written at their own position in one staging (partial) file, which is renamed to the final file when the download is done. Resume state is saved, so a download can continue later.
+- **Racing slow tail blocks:** near the end of a download, a slow part can be fetched a second time on another stream ("hedging", in `scheduler.ts`), and the first copy to finish wins.
+- **Writing the file:** parts are assembled on disk: each is written at its own position in one staging (partial) file, which is renamed to the final file when the download is done. Resume state is saved, so a download can continue later.
 - **Torrents:** each new peer connects through the network that has the fewest peers (`src/main/download/torrent/peers.ts`).
 
 This is the same principle as multi-connection download managers such as IDM or XDM. The difference is that Netlink also spreads the connections across different interfaces.
 
 ## 4. What it does NOT do
 
-- It does not bond or combine internet for a whole home or shop network, or for other devices.
+- It does not combine internet for a whole home or shop network or for other devices. It creates no bonded IP, virtual IP, single combined connection or tunnel endpoint.
 - It does not speed up browsing, streaming, video calls, games or uploads. It only speeds up downloads that run inside the Netlink app.
-- It does not help when the server does not support Range requests. Such a download runs as one stream on one line.
-- It does not help when all the lines share one ISP uplink.
-- Windows may keep sending traffic over its preferred route or leave a line idle. The results depend on how Windows routes traffic.
+- It does not help when the server does not support Range requests. Such a download runs as one stream on one connection.
+- It does not help when all the connections share one ISP uplink.
+- Windows may keep sending traffic over its preferred route or leave a connection idle. The results depend on how Windows routes traffic.
 
 ## 5. OpenWrt / router port (summary)
 
-This repository does not include a router version. A port looks possible: the engine is Node/TypeScript, and on Linux it uses `SO_BINDTODEVICE`. It would need to be separated from Electron and run as a Linux service on the router. Even then, it would only speed up downloads that the service itself performs.
+This repository does not include a router version. A port looks possible: the engine is Node/TypeScript, and on Linux it uses `SO_BINDTODEVICE`. It would need to be separated from Electron and run as a Linux service, so that the router runs the same downloader itself. Each connection still uses its own public IP, with no bonded IP or tunnel. It would only speed up downloads that the router itself performs.
 
 ## 6. OpenWrt readiness plan
 
@@ -60,8 +62,8 @@ The plan (not done yet):
 1. Take Netlink's download engine (`src/main/download`, `src/main/network`) out of Electron and turn it into a headless Node.js service. For small routers, rewriting it in Go or C is an option.
 2. Package it as `.ipk` or `apk` with the SDK. Include a procd init script, plus a LuCI app or a simple web UI on the LAN.
 3. Check that Node is available for the router's CPU architecture. The OpenWrt packages feed has `lang/node`, currently Node 22.x, but it is not built for every target.
-4. The router needs enough RAM and flash. Downloads should be saved to USB storage. The engine uses `SO_BINDTODEVICE` on Linux, which suits routers that have several WAN interfaces.
-5. Even then, it only speeds up downloads that the router service itself performs. It does not bond traffic for the LAN.
+4. The router needs enough RAM and flash. Downloads should be saved to USB storage. The engine uses `SO_BINDTODEVICE` on Linux, which suits routers that have several WAN connections.
+5. Even then, it only speeds up downloads that the router service itself performs. The router would run the same downloader itself, still with each connection using its own public IP. It does not combine traffic for the LAN, and there is no bonded IP or tunnel.
 
 ## Install
 

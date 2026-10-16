@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Netlink — Multi-line downloader by Neuereatec</title>
+<title>Netlink — Multi-connection downloader by Neuereatec</title>
 <style>
 body{margin:0;background:#0d0d0f;color:#e8e6e1;font-family:system-ui,Segoe UI,sans-serif;line-height:1.6}
 main{max-width:760px;margin:auto;padding:48px 20px}
@@ -8,15 +8,15 @@ h1{color:#d4af37;font-size:2.6rem;margin:0}h2{color:#d4af37;border-bottom:1px so
 .note{background:#1a1710;border-left:4px solid #d4af37;padding:12px 16px;border-radius:4px}
 a{color:#e6c55a}footer{margin-top:48px;color:#8a857b;font-size:.9rem}
 </style></head><body><main>
-<h1>Netlink</h1><p class="tag">Neuereatec multi-line downloader for Windows</p>
-<p>Netlink combines all your internet connections — Wi-Fi, Ethernet, phone tethering — to download files faster.</p>
+<h1>Netlink</h1><p class="tag">Neuereatec multi-connection downloader for Windows</p>
+<p>Netlink downloads different parts of the same file through each internet connection you select, then assembles them on disk. It combines connections for its own downloads and requires no VPN or virtual network adapter.</p>
 <a class="btn" href="https://github.com/bbscalton/netlink/releases/latest/download/Netlink-Setup-1.0.0.exe">Download for Windows (v1.0.0)</a>
 <h2>How it works</h2><ul>
-<li>Each line must be its own internet connection (e.g. two different ISPs, or Wi-Fi plus a phone hotspot).</li>
-<li>Netlink splits a file into pieces and fetches them in parallel over each line, then joins them.</li>
-<li>No server or VPS — everything runs locally on your PC.</li>
+<li>Each connection you select must be its own internet connection (e.g. two different ISPs, or Wi-Fi plus a phone hotspot).</li>
+<li>Netlink downloads different parts of the same file through each connection in parallel, then assembles them on disk.</li><li>Each part is fetched over that connection’s own public IP; websites see several IPs, not one.</li>
+<li>No VPN, virtual network adapter, server or VPS — everything runs locally on your PC.</li>
 <li>It only speeds up downloads done inside the Netlink app, not your browser or other programs.</li></ul>
-<h2>OpenWrt (planned)</h2><p>No firmware rebuild is needed. Flash stock OpenWrt and install packages afterwards (<code>apk</code> from 25.12, <code>opkg</code>/.ipk on older releases). The plan is to run Netlink's engine as a headless service packaged with the OpenWrt SDK, with a procd init script and a web UI on the LAN. The router needs enough RAM and USB storage. Details are in the <a href="readme.html">technical README</a>.</p>
+<h2>OpenWrt (planned)</h2><p>No firmware rebuild is needed. Flash stock OpenWrt and install packages afterwards (<code>apk</code> from 25.12, <code>opkg</code>/.ipk on older releases). The plan is for the router to run the same downloader itself (each connection still with its own public IP; no bonded IP or tunnel): Netlink's engine as a headless service packaged with the OpenWrt SDK, with a procd init script and a web UI on the LAN. The router needs enough RAM and USB storage. Details are in the <a href="readme.html">technical README</a>.</p>
 <h2>Installing</h2><p class="note">The installer is not code-signed, so Windows SmartScreen may show “Windows protected your PC”. Click <b>More info</b> → <b>Run anyway</b>.</p>
 <p><a href="readme.html">Technical README</a> · <a href="https://github.com/bbscalton/netlink">Source code</a> · <a href="https://github.com/bbscalton/netlink/releases">All releases</a></p>
 <footer>Based on <a href="https://github.com/anmolkapil/plexo">Plexo</a> by Anmol Kapil (MIT). © Neuereatec.</footer>
