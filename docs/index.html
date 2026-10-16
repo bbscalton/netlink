@@ -16,6 +16,7 @@ a{color:#e6c55a}footer{margin-top:48px;color:#8a857b;font-size:.9rem}
 <li>Netlink splits a file into pieces and fetches them in parallel over each line, then joins them.</li>
 <li>No server or VPS — everything runs locally on your PC.</li>
 <li>It only speeds up downloads done inside the Netlink app, not your browser or other programs.</li></ul>
+<h2>OpenWrt (planned)</h2><p>No firmware rebuild is needed. Flash stock OpenWrt and install packages afterwards (<code>apk</code> from 25.12, <code>opkg</code>/.ipk on older releases). The plan is to run Netlink's engine as a headless service packaged with the OpenWrt SDK, with a procd init script and a web UI on the LAN. The router needs enough RAM and USB storage. Details are in the <a href="readme.html">technical README</a>.</p>
 <h2>Installing</h2><p class="note">The installer is not code-signed, so Windows SmartScreen may show “Windows protected your PC”. Click <b>More info</b> → <b>Run anyway</b>.</p>
 <p><a href="readme.html">Technical README</a> · <a href="https://github.com/bbscalton/netlink">Source code</a> · <a href="https://github.com/bbscalton/netlink/releases">All releases</a></p>
 <footer>Based on <a href="https://github.com/anmolkapil/plexo">Plexo</a> by Anmol Kapil (MIT). © Neuereatec.</footer>

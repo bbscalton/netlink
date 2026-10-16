@@ -41,9 +41,27 @@ This is the same principle as multi-connection download managers such as IDM or 
 - It does not help when all the lines share one ISP uplink.
 - Windows may keep sending traffic over its preferred route or leave a line idle. The results depend on how Windows routes traffic.
 
-## 5. OpenWrt / router port
+## 5. OpenWrt / router port (summary)
 
 This repository does not include a router version. A port looks possible: the engine is Node/TypeScript, and on Linux it uses `SO_BINDTODEVICE`. It would need to be separated from Electron and run as a Linux service on the router. Even then, it would only speed up downloads that the service itself performs.
+
+## 6. OpenWrt readiness plan
+
+Checked against openwrt.org and the OpenWrt release notes in October 2026:
+
+- **No firmware rebuild is needed.** You flash stock OpenWrt, then install packages afterwards.
+  - Releases up to 24.10 use `opkg` with `.ipk` packages.
+  - Starting with **OpenWrt 25.12.0**, OpenWrt uses **`apk`** (Alpine Package Keeper): `apk update`, then `apk add <pkg>`. See https://openwrt.org/docs/guide-user/additional-software/opkg-to-apk-cheatsheet
+- **Image Builder** is optional. It can bake extra packages into a custom image (https://openwrt.org/docs/guide-developer/imagebuilder).
+- **SDK:** the OpenWrt SDK cross-compiles a package from a Makefile in a package feed (https://openwrt.org/docs/guide-developer/toolchain/using_the_sdk).
+
+The plan (not done yet):
+
+1. Take Netlink's download engine (`src/main/download`, `src/main/network`) out of Electron and turn it into a headless Node.js service. For small routers, rewriting it in Go or C is an option.
+2. Package it as `.ipk` or `apk` with the SDK. Include a procd init script, plus a LuCI app or a simple web UI on the LAN.
+3. Check that Node is available for the router's CPU architecture. The OpenWrt packages feed has `lang/node`, currently Node 22.x, but it is not built for every target.
+4. The router needs enough RAM and flash. Downloads should be saved to USB storage. The engine uses `SO_BINDTODEVICE` on Linux, which suits routers that have several WAN interfaces.
+5. Even then, it only speeds up downloads that the router service itself performs. It does not bond traffic for the LAN.
 
 ## Install
 
