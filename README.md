@@ -9,6 +9,26 @@ Netlink downloads different parts of the same file through each internet connect
 - Releases: https://github.com/bbscalton/netlink/releases
 - Diagram: https://bbscalton.github.io/neuereatec-services/netlink.html (if that page is not live yet, use the website above)
 
+## How Netlink works
+
+### Beginner
+
+1. Netlink downloads different parts of the same file through each internet connection you select, then puts the parts back together on your disk.
+2. You don’t need a VPN or any virtual network adapter.
+3. Netlink doesn’t create a bonded or virtual IP. Each connection keeps its own public IP, and the parts are put back together by software on your computer.
+4. A public speed test can’t show the combined speed. A speed test uses a single connection, so it rides whichever one connection your computer sends it over (one link), not all of them.
+5. The real measure is a multi-part download: for example, a large file finishing faster than any single connection could deliver it. Netlink shows the speed of each connection and the total.
+6. Honest caveat: you can’t predict the exact speed gain beforehand. It depends on your connections, the download server (whether it lets files be downloaded in parts, and how many parts at once it allows), and how well the parts can be downloaded side by side.
+
+### Advanced
+
+1. Netlink splits one file into byte ranges and fetches them with HTTP Range requests (RFC 9110 §14), spread across the internet connections you select.
+2. Each TCP connection is pinned to one interface: on Linux with SO_BINDTODEVICE, on Windows and macOS by binding the socket’s source address (Node’s localAddress). The OS’s interface selection then sends it out that connection, so it uses that connection’s own public IP. No VPN, TUN device or virtual adapter is involved.
+3. No bonded IP or virtual IP is created. Parts are fetched in parallel from a shared queue and written at their own offsets into one staging file (positional writes), which is renamed to the final file when complete. All reassembly is done in software on that machine.
+4. A public speed test is one TCP flow (or a few on one route), so it rides one connection, not all of them. A test server receiving Netlink’s parallel requests would instead see distinct source IPs, one per connection.
+5. The real measure is multi-part download throughput: a large file finishing faster than any single connection could deliver it. Netlink shows per-connection and total speed.
+6. The gain can’t be predicted exactly. It depends on per-link capacity, whether the server supports range requests and its per-client connection limits, latency, and disk speed.
+
 ## 1. What Netlink is
 
 Netlink is a rebranded build of **Plexo** by Anmol Kapil, released under the MIT License (https://github.com/anmolkapil/plexo). It is an Electron/TypeScript desktop app. The download engine is Plexo's, unchanged. The original LICENSE is kept in this repository.
